@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import OpportunitiesForm from './OpportunitiesForm';
 
 const CustomerForm = () => {
@@ -16,6 +16,7 @@ const CustomerForm = () => {
   const [industry, setIndustry] = useState('');
   const [companyPhone, setCompanyPhone] = useState('');
   const [companyEmail, setCompanyEmail] = useState('');
+
 
   const handleCustomerTypeChange = (event) => {
     setIsExistingCustomer(event.target.value === 'existing');
@@ -73,12 +74,13 @@ const handleCompanyEmailChange = (event) => {
 };
 
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     // Perform your logic here to handle the form submission based on the customer type and entered data
     if (isExistingCustomer) {
       // Logic for existing customer
+
     } else {
       // Logic for new customer
       if (isNewCompany) {
@@ -229,15 +231,9 @@ const handleCompanyEmailChange = (event) => {
 
       {isExistingCustomer && (
         <div>
-        <label>
-        Customer:
-        <select value={company} onChange={handleCompanyChange}>
-            <option value="">Select a Customer</option>
-            <option value="eena">eena</option>
-            <option value="meena">meena</option>
-            <option value="deeka">deeka</option>
-        </select>
-        </label>
+          <label>
+                  {/* Any syntax can go here to render the list of existing customers */}
+          </label>
         </div>
        )}
 
