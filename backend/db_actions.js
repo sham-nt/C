@@ -43,7 +43,73 @@ function getCompanyMoney() {
 
 function getCompanyIndustry() {
   return new Promise((resolve, reject) => {
-    db.all(`select industry,count(*) as count from company group by industry`, (err, rows) => {
+    db.all(
+      `select industry,count(*) as count from company group by industry`,
+      (err, rows) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      }
+    );
+  });
+}
+
+function getLeadSource() {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `select lead_source,count(*) as count from opportunity group by lead_source`,
+      (err, rows) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
+          console.log(rows);
+          resolve(rows);
+        }
+      }
+    );
+  });
+}
+
+function getData() {
+  return new Promise((resolve, reject) => {
+    db.all(
+      `select * from company c,customer cu,opportunity o, deal d where c.id = d.coid and cu.id = d.cid and o.id = d.oid limit 10`,
+      (err, rows) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      }
+    );
+  });
+}
+
+function getData_id(id) {
+  return new Promise((resolve, reject) => {
+    db.get(
+      `select * from company c,customer cu,opportunity o, deal d where c.id = d.coid and cu.id = d.cid and o.id = d.oid and cu.id = ?`,
+      [id],
+      (err, rows) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      }
+    );
+  });
+}
+
+function getCompanies() {
+  return new Promise((resolve, reject) => {
+    db.get(`select id,name from company`, [id], (err, rows) => {
       if (err) {
         console.error(err.message);
         reject(err);
@@ -54,24 +120,142 @@ function getCompanyIndustry() {
   });
 }
 
-function getLeadSource() {
-    return new Promise((resolve, reject) => {
-      db.all(`select lead_source,count(*) as count from opportunity group by lead_source`, (err, rows) => {
+function getCustomers() {
+  return new Promise((resolve, reject) => {
+    db.get(`select id,name from customers`, [id], (err, rows) => {
+      if (err) {
+        console.error(err.message);
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+
+// User/customer functions
+
+function newCustomerNewCompany(data) {
+  return new Promise((resolve, reject) => {
+    const customer = data.customer;
+    const company = data.company;
+    db.serialize(() => {
+      db.run(
+        `insert into company(name,address,money_spent,industry,email,phone) values(?,?,?,?,?,?)`,
+        [
+          company.name,
+          company.address,
+          company.money_spent,
+          company.industry,
+          company.email,
+          company.phone,
+        ],
+        (err) => {
+          if (err) {
+            console.error(err.message);
+            reject(err);
+          } else {
+            db.get(
+              `select id from company where name = ?`,
+              [company.name],
+              (err, row) => {
+                if (err) {
+                  console.error(err.message);
+                  reject(err);
+                } else {
+                  company_id = row.id;
+                  db.run(
+                    `insert into customer(fname,lname,email,phone,company_id) values(?,?,?,?,?)`,
+                    [
+                      customer.fname,
+                      customer.lname,
+                      customer.email,
+                      customer.phone,
+                      company_id,
+                    ],
+                    (err) => {
+                      if (err) {
+                        console.error(err.message);
+                        reject(err);
+                      }
+                    }
+                  );
+                }
+              }
+            );
+          }
+        }
+      );
+    });
+    resolve("Success");
+  });
+}
+
+function newCustomerOldCompany(data){
+  return new Promise((resolve, reject) => {
+    const customer = data.customer;
+    db.run(
+      `insert into customer(fname,lname,email,phone,company_id) values(?,?,?,?,?)`,
+      [
+        customer.fname,
+        customer.lname,
+        customer.email,
+        customer.phone,
+        company_id,
+      ],
+      (err) => {
         if (err) {
           console.error(err.message);
           reject(err);
-        } else {
-          console.log(rows);
-          resolve(rows);
         }
-      });
-    });
-  }
+      }
+    );
+    resolve("Success")
+  });
+}
 
+function newOpportunity(data){
+  return new Promise((resolve, reject) => {
+    db.run(`insert into opportunity(lead_source,expected_revenue) values(?,?)`,[data.lead_source,data.expected_revenue],(err) => {
+      if (err) {
+        console.error(err.message);
+        reject(err);
+      } else{
+        db.get(`select id from opportunity where lead_source = ? and expected_revenue = ?`,[data.lead_source,data.expected_revenue],(err,row) => {
+          if (err) {
+            console.error(err.message);
+            reject(err);
+          }
+        });
+      }
+  resolve("Success")
+});
+});
+}
+
+
+
+function newDeal(deal_data){
+  return new Promise((resolve, reject) => {
+    db.run(`insert into deal(cid,coid,oid,status) values(?,?,?)`,[deal_data.cust_id,deal_data.comp_id,deal_data.opp_id,deal_data.status],(err) => {
+      if (err) {
+        console.error(err.message);
+        reject(err);
+      }
+  });
+  resolve("Success");
+  });
+}
 
 
 module.exports = {
   getCompanyMoney,
-    getCompanyIndustry,
-    getLeadSource
+  getCompanyIndustry,
+  getLeadSource,
+  getData,
+  getData_id,
+  getCustomers,
+  getCompanies,
+  newCustomerNewCompany,
+  newCustomerOldCompany
 };
