@@ -78,7 +78,7 @@ const handleCompanyEmailChange = (event) => {
     event.preventDefault();
 
     // Perform your logic here to handle the form submission based on the customer type and entered data
-    if (isExistingCustomer) {
+    if (isExistingCustomer) {   
       // Logic for existing customer
 
     } else {
@@ -232,8 +232,9 @@ const handleCompanyEmailChange = (event) => {
       {isExistingCustomer && (
         <div>
           <label>
-                  {/* Any syntax can go here to render the list of existing customers */}
+            {/* Logic for existing customer */}
           </label>
+
         </div>
        )}
 

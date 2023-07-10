@@ -13,12 +13,10 @@ const BarChart = () => {
     const fetchContacts = () => {
         // Simulating an API call delay
         setTimeout(async () => {
-            // const raw = await fetch('http://localhost:3000/dashboard/comp_money').then(res => res.json());
-            // const chartData = raw.comp_money;
             const response = await fetch('http://localhost:3000/dashboard/comp_money');
             const raw = await response.json();
             const chartData = raw.comp_money;
-            console.log(chartData);
+            // console.log(chartData);
     
           setChart(chartData);
         }); // Simulated delay of 1 second
