@@ -1,11 +1,10 @@
-import './App.css';
 import BarChart from './components/BarChart';
 import PieChart from './components/PieChart';
 
-function App() {
+function Dash() {
   return (
     <div>
-      <h1>Chart Page</h1>
+      <h1>Dashboard Page</h1>
       <div style={{ width: '500px', height: '600px' }}>
         <BarChart />
       </div>
@@ -17,4 +16,4 @@ function App() {
   );
 }
 
-export default App
+export default Dash

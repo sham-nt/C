@@ -4,14 +4,14 @@ import './index.css'
 import CustomerButtons from './CustomerForm'
 import Contacts from './Contacts'
 import './main.css'
-import BarChart from './BarChart'
+import Dash from './Dashboard'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <div className='main-container'>
     <Contacts />
     <CustomerButtons />
-    <BarChart />
+    <Dash />
     </div> 
 
   </React.StrictMode>,
