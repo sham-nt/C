@@ -30,7 +30,7 @@ const BarChart = () => {
     var data = {
       labels: chartData.map(x => x.name),
       datasets: [{
-        label: `${chartData.price} Rupees`,
+        label: `Mony Spent by Company`,
         data: chartData.map(x => x.money_spent),
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
@@ -69,7 +69,6 @@ const BarChart = () => {
           data={data}
           height={400}
           options={options}
-  
         />
       </div>
     )
