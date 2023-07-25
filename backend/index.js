@@ -38,7 +38,7 @@ app.get('/contents', (req, res) => {
     });
 });
 
-
+// get all the contents related to a  specific costumer id
 app.get('/contents/:id', (req, res) => {
     const id = req.params.id;
     db_actions.getData_id(id).then((result) => {
@@ -56,19 +56,21 @@ const deal_data = {
 };
 
 app.post('/contents/insert', (req, res) => {
-    const customer = req.params.customer;
+    const customer = req.query.customer;
     if (customer == 1){ // new customer
-        const company = req.params.company;
+        const company = req.query.company;
         if (company == 1){ // new company
             db_actions.newCustomerNewCompany(req.body).then((result) => {
-                res.status(201).send(result);
-                deal_data.cust_id = result.customer.id;
-                deal_data.comp_id = result.company.id;
+                console.log(result);
+                deal_data.cust_id = result.customer_id;
+                deal_data.comp_id = result.company_id;
+                res.status(201).send("Success");
             });
+            console.log(deal_data);
         }
         else if (company == 0){ //new customer old company
             db_actions.getCompanies().then((result) => {
-                res.status(201).send(result);
+                res.status(201).json(result);
                 
             });
 

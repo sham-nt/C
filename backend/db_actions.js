@@ -93,7 +93,7 @@ function getData() {
 function getData_id(id) {
   return new Promise((resolve, reject) => {
     db.get(
-      `select * from company c,customer cu,opportunity o, deal d where c.id = d.coid and cu.id = d.cid and o.id = d.oid and cu.id = ?`,
+      `select * from company c,customer cu,opportunity o, deal d where c.id = d.coid and cu.id = d.cid and o.id = d.oid and d.cid = ?`,
       [id],
       (err, rows) => {
         if (err) {
@@ -109,7 +109,7 @@ function getData_id(id) {
 
 function getCompanies() {
   return new Promise((resolve, reject) => {
-    db.get(`select id,name from company`, [id], (err, rows) => {
+    db.all(`select id,name from company`, (err, rows) => {
       if (err) {
         console.error(err.message);
         reject(err);
@@ -122,7 +122,7 @@ function getCompanies() {
 
 function getCustomers() {
   return new Promise((resolve, reject) => {
-    db.get(`select id,name from customers`, [id], (err, rows) => {
+    db.all(`select id,fname,lname from customer`,(err, rows) => {
       if (err) {
         console.error(err.message);
         reject(err);
@@ -137,6 +137,8 @@ function getCustomers() {
 
 function newCustomerNewCompany(data) {
   return new Promise((resolve, reject) => {
+    let company_id = null;
+    let customer_id = null;
     const customer = data.customer;
     const company = data.company;
     db.serialize(() => {
@@ -186,8 +188,16 @@ function newCustomerNewCompany(data) {
           }
         }
       );
+      db.get(`select id from customer where fname = ? and lname = ?`,[customer.fname,customer.lname],(err,row) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else{
+          customer_id = row.id;
+        }
+      });
+      resolve({"customer_id" : customer_id, "company_id" : company_id});
     });
-    resolve("Success");
   });
 }
 
